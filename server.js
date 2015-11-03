@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
    res.send('Todo API root');
 });
 
-//GET /todos
+//GET /todos?completed=true&q=work
 app.get('/todos', function (req, res) {
     // req.query is like req.body, it stores the information about queries NOT TO BE CONFUSED WITH req.params
     var queryParams = req.query;
@@ -27,6 +27,15 @@ app.get('/todos', function (req, res) {
     } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
         //_.where finds all that match
         filteredTodos = _.where(filteredTodos, {completed: false})
+    }
+    // we are filtering by keywords. we are passing a keyword to q and then search for it and return a new list of todos based on keyword
+    if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
+        filteredTodos = _.filter(filteredTodos, function (todo) {
+            //very important to convert to lower case or upper case!
+            if(todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > 0){
+                return todo;
+            }
+        })
     }
 
     // if has property and completed === 'true'
@@ -117,7 +126,5 @@ app.put('/todos/:id', function (req, res) {
 app.listen(PORT, function () {
    console.log('Express listening on port ' + PORT + '!');
 });
-
-
 
 
