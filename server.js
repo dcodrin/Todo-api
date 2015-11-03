@@ -18,14 +18,30 @@ app.get('/', function (req, res) {
 
 //GET /todos
 app.get('/todos', function (req, res) {
+    // req.query is like req.body, it stores the information about queries NOT TO BE CONFUSED WITH req.params
+    var queryParams = req.query;
+    var filteredTodos = todos;
+    // req.query returns an object where true is a string, but the todos in the array have a boolean true.
+    if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'true'){
+        filteredTodos = _.where(filteredTodos, {completed: true})
+    } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
+        //_.where finds all that match
+        filteredTodos = _.where(filteredTodos, {completed: false})
+    }
+
+    // if has property and completed === 'true'
+    // filteredTodos = _.where(filteredTodos, ?)
+
+
    //res.send(todos); This will not work since we can only send JSON;
    //We need to use .json
-    res.json(todos);
+    res.json(filteredTodos);
 });
 
 //GET /todos/:id
 app.get('/todos/:id', function (req, res) {
    var id = Number(req.params.id); //We used Number() here because req.params return a string. We could have also set our id to string and leave the req.params as is.
+    //_.findWhere finds the FIRST match and returns it.
     var found = _.findWhere(todos, {id: id});
 
     if(found){
